@@ -90,8 +90,12 @@ public:
         }
 
         const char* server_scheme_str = scheme;
-        if (!server_scheme_str || !*server_scheme_str)
-            server_scheme_str = (m_port == 443 || m_port == 8443) ? "https" : "http";
+        if (!server_scheme_str || !*server_scheme_str) {
+            server_scheme_str = FCGX_GetParam("REQUEST_SCHEME", req->envp);
+            if (!server_scheme_str || !*server_scheme_str) {
+                server_scheme_str = (m_port == 443 || m_port == 8443) ? "https" : "http";
+            }
+        }
         m_scheme = server_scheme_str;
 
         setRequestURI(FCGX_GetParam("REQUEST_URI", m_req->envp));
